@@ -34,7 +34,7 @@ async function selectOptionByText(page, selector, searchText) {
 }
 
 const data = {
-    name: process.argv[2],
+    name: 'Gustavo Davi Costa Alves',
     university: process.argv[3],
     campus: process.argv[4],
     degree: process.argv[6],
@@ -80,7 +80,7 @@ const start = async () => {
 
     await sleep(500)
 
-    await page.type('.ng-autocomplete-curso .ng-input input', data.curso, { delay: 50 });
+    await page.type('.ng-autocomplete-curso .ng-input input', data.curso, { delay: 35 });
 
     await selectOptionByText(page, '.ng-autocomplete-curso', data.curso);
 
@@ -90,10 +90,29 @@ const start = async () => {
 
     await page.type('.ng-autocomplete-curso .ng-input:nth-child(2) input', data.degree, { delay: 50 });
 
-    await selectOptionByText(page, '.ng-autocomplete-curso:nth-child(2)', data.degree);
+    await page.keyboard.press('Enter');
+
+    await page.waitForSelector('.btn-botao');
 
     await sleep(1500);
 
+    await page.click('.btn-botao');
+
+
+    // End of search
+
+    await sleep(5000);
+
+    const nameSelector = '.item-selecionados .col-md-7.col-sm-10';
+    const nameElements = await page.$$(nameSelector);
+
+    for (const nameElement of nameElements) {
+        const name = await page.evaluate(element => element.textContent.trim(), nameElement);
+        if (name.trim().toUpperCase === data.name.trim().toUpperCase) {
+            console.log("Names matched!")
+            return true
+        }
+    }
 }
 
 start();
