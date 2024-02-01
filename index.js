@@ -1,4 +1,5 @@
 const puppeteer = require("puppeteer");
+const sisu_url = "https://sisu.mec.gov.br/#/selecionados";
 
 function colorize(text, colorCode) {
     return `\x1b[${colorCode}m${text}\x1b[0m`;
@@ -65,16 +66,16 @@ async function Search(page) {
     await typeAndSelectOption(page, '.ng-input:nth-child(2) input', data.campus, '.ng-autocomplete', false);
 
     await page.keyboard.press('Enter');
-    
+
     await typeAndSelectOption(page, '.ng-autocomplete-curso .ng-input input', data.curso, '.ng-autocomplete-curso');
-    
+
     await page.keyboard.press('Tab');
     await sleep(500);
 
     await typeAndSelectOption(page, '.ng-autocomplete-curso .ng-input:nth-child(2) input', data.degree, '.ng-autocomplete-curso', false);
-    
+
     await page.keyboard.press('Enter');
-    
+
     await page.waitForSelector('.btn-botao');
     await sleep(200);
     await page.click('.btn-botao');
@@ -82,8 +83,18 @@ async function Search(page) {
 }
 
 
+async function findName(page, nameElements) {
+    for (const nameElement of nameElements) {
+        const name = await page.evaluate(element => element.textContent.trim(), nameElement);
+        const cleanedString = name.replace("Nome do candidato: ", "");
 
-const sisu_url = "https://sisu.mec.gov.br/#/selecionados"
+        if (cleanedString.trim().toUpperCase() === data.name.trim().toUpperCase()) {
+            console.log("Names matched!")
+            return true
+        }
+    }
+}
+
 
 const start = async () => {
     const browser = await puppeteer.launch({
@@ -97,19 +108,13 @@ const start = async () => {
 
     const nameSelector = '.item-selecionados .col-md-7.col-sm-10';
     const nameElements = await page.$$(nameSelector);
+    const result = await findName(page, nameElements);
 
-    for (const nameElement of nameElements) {
-        const name = await page.evaluate(element => element.textContent.trim(), nameElement);
-        const cleanedString = name.replace("Nome do candidato: ", "");
-
-        if (cleanedString.trim().toUpperCase() === data.name.trim().toUpperCase()) {
-            console.log("Names matched!")
-            return true
-        }
+    if(!result) {
+        console.log("Names did not matched");
     }
 
-    console.log("Name did not matched!");
-    return false;
+    process.exit()
 }
 
 
