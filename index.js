@@ -37,7 +37,7 @@ const data = {
     name: process.argv[2],
     university: process.argv[3],
     campus: process.argv[4],
-    degree: process.argv[5],
+    degree: process.argv[6],
     Shift: process.argv[6],
     curso: 'Engenharia da computação'
 }
@@ -52,24 +52,24 @@ const sisu_url = "https://sisu.mec.gov.br/#/selecionados"
 const start = async () => {
     const browser = await puppeteer.launch({
         headless: false,
-        args:["--start-maximized"],
+        args: ["--start-maximized"],
     })
 
     const page = await browser.newPage()
 
-    await page.setViewport({width:1280, height: 800});
+    await page.setViewport({ width: 1280, height: 800 });
 
-    await page.goto(sisu_url, {waitUntil: "networkidle2"});
+    await page.goto(sisu_url, { waitUntil: "networkidle2" });
 
     await page.waitForSelector('.ng-autocomplete');
 
     await page.type('.ng-input input', data.university, { delay: 50 });
-    
+
     await selectOptionByText(page, '.ng-autocomplete', data.university);
 
     await page.keyboard.press('Tab');
 
-    await sleep(5000)
+    await sleep(500)
 
     await page.type('.ng-input input', data.campus, { delay: 50 });
 
@@ -78,12 +78,19 @@ const start = async () => {
     //
     await page.keyboard.press('Tab');
 
-    await sleep(5000)
+    await sleep(500)
 
-    await page.type('.ng-autocomplete-curso .ng-input input', data.curso, { delay: 100 });
+    await page.type('.ng-autocomplete-curso .ng-input input', data.curso, { delay: 50 });
 
     await selectOptionByText(page, '.ng-autocomplete-curso', data.curso);
 
+    await page.keyboard.press('Tab');
+
+    await sleep(600)
+
+    await page.type('.ng-autocomplete-curso .ng-input:nth-child(2) input', data.degree, { delay: 50 });
+
+    await selectOptionByText(page, '.ng-autocomplete-curso:nth-child(2)', data.degree);
 
     await sleep(1500);
 
