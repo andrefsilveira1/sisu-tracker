@@ -14,6 +14,24 @@ if (process.argv.length < 7) {
     process.exit(1);
 }
 
+async function selectOptionByText(page, selector, searchText) {
+    await page.click(selector);
+
+    await page.waitForSelector('.ng-option-label');
+
+    const options = await page.$$('.ng-option-label');
+
+    const matchingOption = options.find(async (option) => {
+        const text = await option.evaluate(node => node.innerText.trim().toLowerCase());
+        return text.includes(searchText.toLowerCase());
+    });
+
+    if (matchingOption) {
+        await matchingOption.click();
+    } else {
+        console.error(`Option with text "${searchText}" not found`);
+    }
+}
 
 const data = {
     name: process.argv[2],
@@ -42,5 +60,24 @@ const start = async () => {
 
     await page.goto(sisu_url, {waitUntil: "networkidle2"});
 
-    await sleep(2000);
+    await page.waitForSelector('.ng-autocomplete');
+
+    await page.click('.ng-autocomplete');
+
+    await page.waitForSelector('.ng-input input');
+
+    await page.type('.ng-input input', data.university, { delay: 50 });
+    
+    await selectOptionByText(page, '.ng-autocomplete', data.university);
+
+
+    await sleep(1500);
+
+    const ngSelectValue = await page.$eval('.ng-autocomplete', (element) => {
+        return element.innerText;
+    });
+
+    console.log('ng-select value:', ngSelectValue);
 }
+
+start();
