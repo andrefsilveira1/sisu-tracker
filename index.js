@@ -1,6 +1,6 @@
 const puppeteer = require("puppeteer");
 const sisu_url = "https://sisu.mec.gov.br/#/selecionados";
-
+const fs = require('fs');
 function colorize(text, colorCode) {
     return `\x1b[${colorCode}m${text}\x1b[0m`;
 }
@@ -36,12 +36,11 @@ async function selectOptionByText(page, selector, searchText) {
 }
 
 const data = {
-    name: 'GUSTAVO DAVI COSTA ALVES',
+    name: process.argv[2],
     university: process.argv[3],
     campus: process.argv[4],
+    curso: process.argv[5],
     degree: process.argv[6],
-    Shift: process.argv[6],
-    curso: 'Engenharia da computação'
 }
 
 
