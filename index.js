@@ -29,3 +29,18 @@ console.log("Are those data correct?", data);
 
 
 const sisu_url = "https://sisu.mec.gov.br/#/selecionados"
+
+const start = async () => {
+    const browser = await puppeteer.launch({
+        headless: false,
+        args:["--start-maximized"],
+    })
+
+    const page = await browser.newPage()
+
+    await page.setViewport({width:1280, height: 800});
+
+    await page.goto(sisu_url, {waitUntil: "networkidle2"});
+
+    await sleep(2000);
+}
