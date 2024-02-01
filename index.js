@@ -36,12 +36,11 @@ async function selectOptionByText(page, selector, searchText) {
 }
 
 const data = {
-    name: 'GUSTAVO DAVI COSTA ALVES',
+    name: process.argv[2],
     university: process.argv[3],
     campus: process.argv[4],
+    curso: process.argv[5],
     degree: process.argv[6],
-    Shift: process.argv[6],
-    curso: 'Engenharia da computação'
 }
 
 
