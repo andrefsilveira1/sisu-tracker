@@ -1,6 +1,6 @@
 const puppeteer = require("puppeteer");
 const sisu_url = "https://sisu.mec.gov.br/#/selecionados";
-
+const fs = require('fs');
 function colorize(text, colorCode) {
     return `\x1b[${colorCode}m${text}\x1b[0m`;
 }
