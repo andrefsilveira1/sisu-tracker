@@ -15,6 +15,7 @@ if (process.argv.length < 7) {
 }
 
 async function selectOptionByText(page, selector, searchText) {
+
     await page.click(selector);
 
     await page.waitForSelector('.ng-option-label');
@@ -34,7 +35,7 @@ async function selectOptionByText(page, selector, searchText) {
 }
 
 const data = {
-    name: 'Gustavo Davi Costa Alves',
+    name: 'GUSTAVO DAVI COSTA ALVES',
     university: process.argv[3],
     campus: process.argv[4],
     degree: process.argv[6],
@@ -43,7 +44,42 @@ const data = {
 }
 
 
-console.log("Are those data correct?", data);
+console.log("Data loaded: ", data);
+
+
+async function typeAndSelectOption(page, selector, value, autocompleteSelector, flag = true) {
+
+    await page.type(selector, value, { delay: 50 });
+
+    flag ? await selectOptionByText(page, autocompleteSelector, value) : '';
+    flag ? await page.keyboard.press('Tab') : '';
+
+    await sleep(500);
+}
+
+async function Search(page) {
+    await page.setViewport({ width: 1280, height: 800 });
+    await page.goto(sisu_url, { waitUntil: "networkidle2" });
+
+    await typeAndSelectOption(page, '.ng-input input', data.university, '.ng-autocomplete');
+    await typeAndSelectOption(page, '.ng-input:nth-child(2) input', data.campus, '.ng-autocomplete', false);
+
+    await page.keyboard.press('Enter');
+    
+    await typeAndSelectOption(page, '.ng-autocomplete-curso .ng-input input', data.curso, '.ng-autocomplete-curso');
+    
+    await page.keyboard.press('Tab');
+    await sleep(500);
+
+    await typeAndSelectOption(page, '.ng-autocomplete-curso .ng-input:nth-child(2) input', data.degree, '.ng-autocomplete-curso', false);
+    
+    await page.keyboard.press('Enter');
+    
+    await page.waitForSelector('.btn-botao');
+    await sleep(200);
+    await page.click('.btn-botao');
+
+}
 
 
 
@@ -51,68 +87,30 @@ const sisu_url = "https://sisu.mec.gov.br/#/selecionados"
 
 const start = async () => {
     const browser = await puppeteer.launch({
-        headless: false,
         args: ["--start-maximized"],
     })
 
     const page = await browser.newPage()
-
-    await page.setViewport({ width: 1280, height: 800 });
-
     await page.goto(sisu_url, { waitUntil: "networkidle2" });
-
-    await page.waitForSelector('.ng-autocomplete');
-
-    await page.type('.ng-input input', data.university, { delay: 50 });
-
-    await selectOptionByText(page, '.ng-autocomplete', data.university);
-
-    await page.keyboard.press('Tab');
-
-    await sleep(500)
-
-    await page.type('.ng-input input', data.campus, { delay: 50 });
-
-    await selectOptionByText(page, '.ng-autocomplete-campus', data.campus);
-
-    //
-    await page.keyboard.press('Tab');
-
-    await sleep(500)
-
-    await page.type('.ng-autocomplete-curso .ng-input input', data.curso, { delay: 35 });
-
-    await selectOptionByText(page, '.ng-autocomplete-curso', data.curso);
-
-    await page.keyboard.press('Tab');
-
-    await sleep(600)
-
-    await page.type('.ng-autocomplete-curso .ng-input:nth-child(2) input', data.degree, { delay: 50 });
-
-    await page.keyboard.press('Enter');
-
-    await page.waitForSelector('.btn-botao');
-
-    await sleep(1500);
-
-    await page.click('.btn-botao');
-
-
-    // End of search
-
-    await sleep(5000);
+    await Search(page)
+    await sleep(100);
 
     const nameSelector = '.item-selecionados .col-md-7.col-sm-10';
     const nameElements = await page.$$(nameSelector);
 
     for (const nameElement of nameElements) {
         const name = await page.evaluate(element => element.textContent.trim(), nameElement);
-        if (name.trim().toUpperCase === data.name.trim().toUpperCase) {
+        const cleanedString = name.replace("Nome do candidato: ", "");
+
+        if (cleanedString.trim().toUpperCase() === data.name.trim().toUpperCase()) {
             console.log("Names matched!")
             return true
         }
     }
+
+    console.log("Name did not matched!");
+    return false;
 }
+
 
 start();
