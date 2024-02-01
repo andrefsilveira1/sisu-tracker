@@ -39,6 +39,7 @@ const data = {
     campus: process.argv[4],
     degree: process.argv[5],
     Shift: process.argv[6],
+    curso: 'Engenharia da computação'
 }
 
 
@@ -62,22 +63,30 @@ const start = async () => {
 
     await page.waitForSelector('.ng-autocomplete');
 
-    await page.click('.ng-autocomplete');
-
-    await page.waitForSelector('.ng-input input');
-
     await page.type('.ng-input input', data.university, { delay: 50 });
     
     await selectOptionByText(page, '.ng-autocomplete', data.university);
 
+    await page.keyboard.press('Tab');
+
+    await sleep(5000)
+
+    await page.type('.ng-input input', data.campus, { delay: 50 });
+
+    await selectOptionByText(page, '.ng-autocomplete-campus', data.campus);
+
+    //
+    await page.keyboard.press('Tab');
+
+    await sleep(5000)
+
+    await page.type('.ng-autocomplete-curso .ng-input input', data.curso, { delay: 100 });
+
+    await selectOptionByText(page, '.ng-autocomplete-curso', data.curso);
+
 
     await sleep(1500);
 
-    const ngSelectValue = await page.$eval('.ng-autocomplete', (element) => {
-        return element.innerText;
-    });
-
-    console.log('ng-select value:', ngSelectValue);
 }
 
 start();
