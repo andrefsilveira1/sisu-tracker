@@ -58,7 +58,6 @@ async function typeAndSelectOption(page, selector, value, autocompleteSelector, 
 }
 
 async function Search(page) {
-    await page.setViewport({ width: 1280, height: 800 });
     await page.goto(sisu_url, { waitUntil: "networkidle2" });
 
     await typeAndSelectOption(page, '.ng-input input', data.university, '.ng-autocomplete');
@@ -88,7 +87,7 @@ async function findName(page, nameElements) {
         const cleanedString = name.replace("Nome do candidato: ", "");
 
         if (cleanedString.trim().toUpperCase() === data.name.trim().toUpperCase()) {
-            console.log("Names matched!")
+            console.log("Name matched!")
             return true
         }
     }
@@ -101,16 +100,16 @@ const start = async () => {
     })
 
     const page = await browser.newPage()
-    await page.goto(sisu_url, { waitUntil: "networkidle2" });
+    await page.setViewport({ width: 1280, height: 800 });
     await Search(page)
-    await sleep(100);
+    await sleep(300);
 
     const nameSelector = '.item-selecionados .col-md-7.col-sm-10';
     const nameElements = await page.$$(nameSelector);
     const result = await findName(page, nameElements);
 
     if(!result) {
-        console.log("Names did not matched");
+        console.log("Name did not matched");
     }
 
     process.exit()
