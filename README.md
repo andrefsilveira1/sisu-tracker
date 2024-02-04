@@ -13,6 +13,8 @@ just run: `node index.js [student name] [university name] [course name] [degree]
 
 Then, a message in terminal will display the result, if the name match or not
 
+Notice that the script is not case sensitive, so, you do not have to write exactly is at the Sisu page. Furthermore, remember to write names between quotes or single quotes
+
 # Next steps
 
 Maybe read a `.txt` file will me easier instead pass the name as arguments
