@@ -18,3 +18,8 @@ Notice that the script is not case sensitive, so, you do not have to write exact
 # Next steps
 
 Maybe read a `.txt` file will me easier instead pass the name as arguments
+
+
+# Medium
+
+[Medium post](https://medium.com/@freitasandre38/web-scrapper-para-checar-aprovados-no-enem-sisu-22b7c51f5b0c)
